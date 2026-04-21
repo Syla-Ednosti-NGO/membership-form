@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Заява на вступ до ГО</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;900&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="app-header">
+  <div class="app-title">
+    <span class="brand-mark">ЗАЯВА&nbsp;НА&nbsp;ВСТУП</span>
+    <span class="app-sub" id="orgNameHeader">ГО «КИЇВТИЛ»</span>
+  </div>
+</header>
+
+<!-- Step indicator -->
+<nav class="steps-bar" aria-label="Кроки">
+  <div class="step-dot active" data-step="1"><b>1</b><span>Дані</span></div>
+  <div class="step-line"></div>
+  <div class="step-dot" data-step="2"><b>2</b><span>Контакти</span></div>
+  <div class="step-line"></div>
+  <div class="step-dot" data-step="3"><b>3</b><span>Анкета</span></div>
+  <div class="step-line"></div>
+  <div class="step-dot" data-step="4"><b>4</b><span>Підпис</span></div>
+  <div class="step-line"></div>
+  <div class="step-dot" data-step="5"><b>5</b><span>Готово</span></div>
+</nav>
+
+<!-- Steps -->
+<main class="wizard">
+
+  <!-- ========== STEP 1 — Особисті дані ========== -->
+  <section class="page active" data-step="1">
+    <h1>Особисті дані</h1>
+    <p class="page-hint">Заповніть так, як у паспорті чи ID-картці.</p>
+
+    <div class="q">
+      <label for="lastName" class="q-label">Прізвище</label>
+      <input type="text" id="lastName" class="big-input" placeholder="Іваненко" autocomplete="family-name">
+      <div class="field-error" data-error-for="lastName"></div>
+    </div>
+
+    <div class="q">
+      <label for="firstName" class="q-label">Ім'я</label>
+      <input type="text" id="firstName" class="big-input" placeholder="Олена" autocomplete="given-name">
+      <div class="field-error" data-error-for="firstName"></div>
+    </div>
+
+    <div class="q">
+      <label for="middleName" class="q-label">По батькові</label>
+      <input type="text" id="middleName" class="big-input" placeholder="Петрівна" autocomplete="additional-name">
+      <div class="field-error" data-error-for="middleName"></div>
+    </div>
+
+    <div class="q">
+      <label for="birthDate" class="q-label">Дата народження</label>
+      <input type="date" id="birthDate" class="big-input">
+      <div class="field-error" data-error-for="birthDate"></div>
+    </div>
+
+    <div class="q">
+      <label for="ipn" class="q-label">РНОКПП (ІПН) <span class="q-sublabel-inline">10 цифр</span></label>
+      <input type="text" id="ipn" class="big-input" inputmode="numeric" maxlength="10" placeholder="1234567890">
+      <div class="field-error" data-error-for="ipn"></div>
+    </div>
+
+    <div class="q">
+      <label for="passport" class="q-label">Паспорт / ID-картка</label>
+      <input type="text" id="passport" class="big-input" placeholder="АА 123456 або 123456789">
+      <div class="field-error" data-error-for="passport"></div>
+    </div>
+
+    <div class="nav-buttons">
+      <span></span>
+      <button type="button" class="btn-next" data-target="2">Далі →</button>
+    </div>
+  </section>
+
+  <!-- ========== STEP 2 — Контакти ========== -->
+  <section class="page" data-step="2">
+    <h1>Контакти</h1>
+    <p class="page-hint">Як з вами зв'язуватися.</p>
+
+    <div class="q">
+      <label for="phone" class="q-label">Контактний телефон</label>
+      <input type="tel" id="phone" class="big-input" placeholder="+38 (0__) ___-__-__" autocomplete="tel">
+      <div class="field-error" data-error-for="phone"></div>
+    </div>
+
+    <div class="q">
+      <label for="email" class="q-label">Електронна пошта</label>
+      <input type="email" id="email" class="big-input" placeholder="example@mail.com" autocomplete="email">
+      <div class="field-error" data-error-for="email"></div>
+    </div>
+
+    <div class="q">
+      <span class="q-label">Як зручніше отримувати повідомлення?</span>
+      <p class="q-sublabel">Оберіть одне або декілька</p>
+      <div class="checkbox-list">
+        <label class="checkbox-card">
+          <input type="checkbox" name="contactPref" value="Електронна пошта">
+          <span>Електронна пошта</span>
+        </label>
+        <label class="checkbox-card">
+          <input type="checkbox" name="contactPref" value="Телефон / SMS">
+          <span>Телефон / SMS</span>
+        </label>
+        <label class="checkbox-card">
+          <input type="checkbox" name="contactPref" value="Месенджери">
+          <span>Месенджери (Telegram, Viber)</span>
+        </label>
+        <label class="checkbox-card">
+          <input type="checkbox" name="contactPref" value="Поштою">
+          <span>Поштою</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button type="button" class="btn-back" data-target="1">← Назад</button>
+      <button type="button" class="btn-next" data-target="3">Далі →</button>
+    </div>
+  </section>
+
+  <!-- ========== STEP 3 — Анкета ========== -->
+  <section class="page" data-step="3">
+    <h1>Анкета</h1>
+    <p class="page-hint">Розкажіть про себе — це буде в анкеті-додатку.</p>
+
+    <div class="q">
+      <label for="education" class="q-label">Освіта</label>
+      <input type="text" id="education" class="big-input" placeholder="Наприклад: вища, КНУ ім. Шевченка, економіст">
+    </div>
+
+    <div class="q">
+      <label for="occupation" class="q-label">Місце роботи / проходження служби</label>
+      <textarea id="occupation" class="big-textarea" rows="2" placeholder="Назва організації, посада"></textarea>
+    </div>
+
+    <div class="q">
+      <span class="q-label">Чи є членом інших громадських організацій?</span>
+      <div class="radio-group">
+        <label class="radio-card">
+          <input type="radio" name="otherMembership" value="no" checked>
+          <span>Ні</span>
+        </label>
+        <label class="radio-card">
+          <input type="radio" name="otherMembership" value="yes">
+          <span>Так</span>
+        </label>
+      </div>
+      <div id="otherMembershipDetails" class="conditional-field hidden">
+        <input type="text" id="otherMembershipName" class="big-input" placeholder="Яких саме?">
+      </div>
+    </div>
+
+    <div class="q">
+      <label for="purpose" class="q-label">Мета вступу до організації</label>
+      <textarea id="purpose" class="big-textarea" rows="3" maxlength="400" placeholder="Чому ви хочете долучитись"></textarea>
+      <div class="char-counter" id="purpose-counter">0 / 400</div>
+    </div>
+
+    <div class="q">
+      <label for="ideas" class="q-label">Ідеї та проекти <span class="q-sublabel-inline">необов'язково</span></label>
+      <textarea id="ideas" class="big-textarea" rows="3" maxlength="400" placeholder="Які ідеї або проекти хочете запропонувати"></textarea>
+      <div class="char-counter" id="ideas-counter">0 / 400</div>
+    </div>
+
+    <div class="q">
+      <label for="otherInfo" class="q-label">Інша інформація <span class="q-sublabel-inline">необов'язково</span></label>
+      <textarea id="otherInfo" class="big-textarea" rows="3" maxlength="400" placeholder="Все, що вважаєте за потрібне додати"></textarea>
+      <div class="char-counter" id="otherInfo-counter">0 / 400</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button type="button" class="btn-back" data-target="2">← Назад</button>
+      <button type="button" class="btn-next" data-target="4">Далі →</button>
+    </div>
+  </section>
+
+  <!-- ========== STEP 4 — Підпис ========== -->
+  <section class="page" data-step="4">
+    <h1>Ваш підпис</h1>
+    <p class="page-hint">Один підпис — буде використаний у заяві та анкеті. Підпишіться пальцем, мишею або сфотографуйте.</p>
+
+    <div class="sig-tabs" role="tablist">
+      <button type="button" class="sig-tab active" data-sig-tab="draw" role="tab">✍️ Намалювати</button>
+      <button type="button" class="sig-tab" data-sig-tab="photo" role="tab">📷 Сфотографувати</button>
+    </div>
+
+    <div class="sig-panel active" data-sig-panel="draw">
+      <div class="sig-canvas-wrap">
+        <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+        <div class="sig-placeholder">Підпишіться тут</div>
+      </div>
+      <div class="sig-actions">
+        <button type="button" id="btn-clear-sig" class="btn-link">✕ Очистити</button>
+      </div>
+    </div>
+
+    <div class="sig-panel" data-sig-panel="photo">
+      <label for="sigPhoto" class="sig-upload-btn">
+        <span class="sig-upload-icon">📷</span>
+        <span class="sig-upload-text">Обрати або зробити фото</span>
+        <input type="file" id="sigPhoto" accept="image/*" capture="environment" hidden>
+      </label>
+      <div class="sig-preview-wrap hidden" id="sigPreviewWrap">
+        <img id="sigPreview" alt="Підпис" class="sig-preview">
+        <button type="button" id="btn-clear-photo" class="btn-link">✕ Видалити та обрати інше</button>
+      </div>
+      <p class="page-hint sig-tip">Порада: сфотографуйте підпис на білому аркуші при хорошому світлі.</p>
+    </div>
+
+    <div class="field-error" data-error-for="signature"></div>
+
+    <div class="nav-buttons">
+      <button type="button" class="btn-back" data-target="3">← Назад</button>
+      <button type="button" class="btn-next" data-target="5">Далі →</button>
+    </div>
+  </section>
+
+  <!-- ========== STEP 5 — Перегляд і завантаження ========== -->
+  <section class="page" data-step="5">
+    <h1>Перевірте дані</h1>
+    <p class="page-hint">Переконайтесь, що все вірно — потім завантажте PDF (заява + анкета на двох сторінках).</p>
+
+    <div class="review" id="review">
+      <!-- filled by JS -->
+    </div>
+
+    <!-- Hidden PDF pages for html2canvas → jsPDF -->
+    <div class="pdf-host" aria-hidden="true">
+      <div id="pdfPage1" class="pdf-page"><!-- Заява --></div>
+      <div id="pdfPage2" class="pdf-page"><!-- Анкета --></div>
+    </div>
+
+    <div class="final-actions">
+      <button type="button" id="btn-pdf" class="btn-big">Завантажити PDF</button>
+      <button type="button" class="btn-back btn-big-ghost" data-target="1">Повернутись правити</button>
+      <button type="button" id="btn-new" class="btn-link">Створити нову заяву</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Libraries -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
+<script src="template.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
