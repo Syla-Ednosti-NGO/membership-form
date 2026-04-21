@@ -405,13 +405,28 @@ btnPdf.addEventListener('click', async () => {
     const page1 = $('#pdfPage1');
     const page2 = $('#pdfPage2');
 
-    const opts = { scale: 2, useCORS: true, backgroundColor: '#ffffff' };
+    // Force html2canvas to render at the actual element size (794×1123 ≈ A4 @ 96dpi),
+    // ignoring the mobile viewport. Without windowWidth/windowHeight, mobile browsers
+    // render the capture at the viewport width (~375px) and the resulting image is
+    // stretched across A4 in the PDF, making text look ~2× too large.
+    const PX_W = 794;
+    const PX_H = 1123;
 
-    const canvas1 = await html2canvas(page1, opts);
+    const renderOpts = (el) => ({
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      width: PX_W,
+      height: Math.max(PX_H, el.scrollHeight),
+      windowWidth: PX_W,
+      windowHeight: Math.max(PX_H, el.scrollHeight),
+    });
+
+    const canvas1 = await html2canvas(page1, renderOpts(page1));
     doc.addImage(canvas1.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
 
     doc.addPage();
-    const canvas2 = await html2canvas(page2, opts);
+    const canvas2 = await html2canvas(page2, renderOpts(page2));
     doc.addImage(canvas2.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
 
     const filename = `Заява_${STATE.lastName || 'вступ'}.pdf`;

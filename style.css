@@ -580,20 +580,24 @@ input[type="date"].big-input {
   position: fixed;
   left: -10000px;
   top: 0;
-  width: 210mm;
+  width: 794px; /* 210mm @ 96dpi — fixed px so mobile viewport doesn't shrink it */
   pointer-events: none;
   opacity: 0;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 .pdf-page {
-  width: 210mm;
-  min-height: 297mm;
-  padding: 18mm 16mm;
+  width: 794px;       /* 210mm */
+  min-height: 1123px; /* 297mm */
+  padding: 68px 60px; /* ~18mm / ~16mm */
   background: #FFFFFF;
   color: #0F1A2E;
   font-family: 'Manrope', system-ui, sans-serif;
-  font-size: 11pt;
+  font-size: 14.5px;  /* ~11pt */
   line-height: 1.5;
   box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 .pdf-page h1,
 .pdf-page h2 {
@@ -612,19 +616,19 @@ input[type="date"].big-input {
 }
 .pdf-head-left {
   max-width: 55%;
-  font-size: 10pt;
+  font-size: 13px;
   color: #6E7380;
 }
 .pdf-head-org {
   font-family: 'Unbounded', system-ui, sans-serif;
   font-weight: 700;
-  font-size: 12pt;
+  font-size: 16px;
   color: #1A2B4A;
   margin-bottom: 4px;
 }
 .pdf-head-right {
   text-align: right;
-  font-size: 9pt;
+  font-size: 12px;
   color: #6E7380;
 }
 .pdf-title {
@@ -632,13 +636,13 @@ input[type="date"].big-input {
   margin: 18px 0 24px;
 }
 .pdf-title h1 {
-  font-size: 22pt;
+  font-size: 29px;
   font-weight: 900;
   letter-spacing: 0.15em;
 }
 .pdf-title p {
   margin: 6px 0 0;
-  font-size: 11pt;
+  font-size: 14.5px;
   color: #6E7380;
 }
 .pdf-body p { margin: 0 0 10px; text-align: justify; }
@@ -651,7 +655,7 @@ input[type="date"].big-input {
   width: 100%;
   border-collapse: collapse;
   margin: 18px 0;
-  font-size: 10pt;
+  font-size: 13px;
 }
 .pdf-data-table th,
 .pdf-data-table td {
@@ -699,14 +703,14 @@ input[type="date"].big-input {
   margin-left: auto;
 }
 .pdf-signature-name {
-  font-size: 10pt;
+  font-size: 13px;
   color: #6E7380;
 }
 
 /* ===== PDF template extras ===== */
 .pdf-head-meta { margin-top: 8px; font-size: 10pt; line-height: 1.4; color: #1A2B4A; }
 .pdf-title--compact { margin: 6px 0 16px; }
-.pdf-title--compact h1 { font-size: 18pt; letter-spacing: 0.12em; }
+.pdf-title--compact h1 { font-size: 24px; letter-spacing: 0.12em; }
 
 .pdf-indent { text-indent: 28px; margin: 0 0 10px; text-align: justify; }
 
@@ -723,14 +727,14 @@ input[type="date"].big-input {
 .pdf-q-label {
   font-weight: 700;
   color: #1A2B4A;
-  font-size: 10.5pt;
+  font-size: 14px;
   margin-bottom: 3px;
 }
 .pdf-q-value {
   padding: 6px 0;
   border-bottom: 1px solid #DDE2EA;
   min-height: 20px;
-  font-size: 10.5pt;
+  font-size: 14px;
   white-space: pre-wrap;
 }
 
@@ -752,13 +756,13 @@ input[type="date"].big-input {
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  font-size: 11pt;
+  font-size: 14.5px;
   color: #0F1A2E;
 }
 .pdf-sig-value--img { padding-bottom: 0; }
 .pdf-sig-label {
   margin-top: 4px;
-  font-size: 9pt;
+  font-size: 12px;
   color: #6E7380;
   font-style: italic;
 }
