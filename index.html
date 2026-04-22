@@ -242,6 +242,31 @@
 
     <div class="final-actions">
       <button type="button" id="btn-pdf" class="btn-big">Завантажити PDF</button>
+
+      <div class="send-block">
+        <div class="send-block-head">
+          <span class="send-block-title">Надіслати заяву на пошту організації</span>
+          <span class="send-block-sub">PDF додається автоматично. Можете прикріпити фото паспорта, ІПН тощо.</span>
+        </div>
+
+        <div class="q">
+          <label class="q-label" for="sendNote">Коментар <span class="q-sublabel-inline">необов'язково</span></label>
+          <textarea id="sendNote" class="big-textarea" rows="3" placeholder="Додатковий текст до листа"></textarea>
+        </div>
+
+        <div class="q">
+          <label class="q-label">Додаткові файли <span class="q-sublabel-inline">необов'язково</span></label>
+          <label for="sendFiles" class="file-upload-btn">
+            <span class="file-upload-icon">📎</span>
+            <span class="file-upload-text">Обрати файли (фото паспорта, ІПН…)</span>
+            <input type="file" id="sendFiles" multiple accept="image/*,.pdf" hidden>
+          </label>
+          <ul class="file-list" id="fileList"></ul>
+        </div>
+
+        <button type="button" id="btn-send-email" class="btn-big btn-send">Надіслати на пошту організації</button>
+      </div>
+
       <button type="button" class="btn-back btn-big-ghost" data-target="1">Повернутись правити</button>
       <button type="button" id="btn-new" class="btn-link">Створити нову заяву</button>
     </div>

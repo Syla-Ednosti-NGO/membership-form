@@ -575,6 +575,94 @@ input[type="date"].big-input {
 }
 .final-actions .btn-link { text-align: center; }
 
+/* ========= SEND BLOCK (step 5) ========= */
+.send-block {
+  background: var(--paper);
+  border: 2px solid var(--gray-200);
+  border-radius: var(--r);
+  padding: 18px 18px 20px;
+  margin-top: 4px;
+}
+.send-block-head { margin-bottom: 14px; }
+.send-block-title {
+  display: block;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.send-block-sub {
+  display: block;
+  font-size: 13px;
+  color: var(--muted);
+}
+.file-upload-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--paper);
+  border: 2px dashed var(--navy);
+  border-radius: var(--r);
+  cursor: pointer;
+  transition: background 120ms;
+}
+.file-upload-btn:hover { background: var(--yellow-soft); }
+.file-upload-icon { font-size: 22px; }
+.file-upload-text {
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--navy);
+}
+.file-list {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.file-list:empty { display: none; }
+.file-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--r-s);
+  font-size: 13px;
+  color: var(--ink);
+}
+.file-list .file-name { flex: 1; word-break: break-all; }
+.file-list .file-size {
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  flex-shrink: 0;
+}
+.file-list .file-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  flex-shrink: 0;
+  font-family: inherit;
+}
+.file-list .file-remove:hover { color: var(--danger); }
+
+.btn-send {
+  background: var(--navy) !important;
+  color: var(--yellow) !important;
+  border-color: var(--navy) !important;
+}
+.btn-send:hover { background: #263558 !important; }
+.btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
+
 /* ========= PDF DOCUMENT (hidden, rendered via html2canvas) ========= */
 .pdf-host {
   position: fixed;

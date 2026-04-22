@@ -387,50 +387,58 @@ function escapeHtml(s) {
 /* ========= PDF GENERATION ========= */
 const btnPdf = $('#btn-pdf');
 
+async function buildPdfDoc() {
+  collectSignature();
+  const data = { ...STATE };
+
+  $('#pdfPage1').innerHTML = window.PDF_TEMPLATE.renderZayava(data);
+  $('#pdfPage2').innerHTML = window.PDF_TEMPLATE.renderAnketa(data);
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ format: 'a4', unit: 'mm', orientation: 'portrait' });
+
+  const page1 = $('#pdfPage1');
+  const page2 = $('#pdfPage2');
+
+  // Force html2canvas to render at the actual element size (794×1123 ≈ A4 @ 96dpi),
+  // ignoring the mobile viewport. Without windowWidth/windowHeight, mobile browsers
+  // render the capture at the viewport width (~375px) and the resulting image is
+  // stretched across A4 in the PDF, making text look ~2× too large.
+  const PX_W = 794;
+  const PX_H = 1123;
+
+  const renderOpts = (el) => ({
+    scale: 2,
+    useCORS: true,
+    backgroundColor: '#ffffff',
+    width: PX_W,
+    height: Math.max(PX_H, el.scrollHeight),
+    windowWidth: PX_W,
+    windowHeight: Math.max(PX_H, el.scrollHeight),
+  });
+
+  const canvas1 = await html2canvas(page1, renderOpts(page1));
+  doc.addImage(canvas1.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
+
+  doc.addPage();
+  const canvas2 = await html2canvas(page2, renderOpts(page2));
+  doc.addImage(canvas2.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
+
+  return doc;
+}
+
+function pdfFilename() {
+  return `Заява_${STATE.lastName || 'вступ'}.pdf`;
+}
+
 btnPdf.addEventListener('click', async () => {
   const originalText = btnPdf.textContent;
   btnPdf.disabled = true;
   btnPdf.textContent = 'Готуємо PDF…';
 
   try {
-    collectSignature();
-    const data = { ...STATE };
-
-    $('#pdfPage1').innerHTML = window.PDF_TEMPLATE.renderZayava(data);
-    $('#pdfPage2').innerHTML = window.PDF_TEMPLATE.renderAnketa(data);
-
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ format: 'a4', unit: 'mm', orientation: 'portrait' });
-
-    const page1 = $('#pdfPage1');
-    const page2 = $('#pdfPage2');
-
-    // Force html2canvas to render at the actual element size (794×1123 ≈ A4 @ 96dpi),
-    // ignoring the mobile viewport. Without windowWidth/windowHeight, mobile browsers
-    // render the capture at the viewport width (~375px) and the resulting image is
-    // stretched across A4 in the PDF, making text look ~2× too large.
-    const PX_W = 794;
-    const PX_H = 1123;
-
-    const renderOpts = (el) => ({
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#ffffff',
-      width: PX_W,
-      height: Math.max(PX_H, el.scrollHeight),
-      windowWidth: PX_W,
-      windowHeight: Math.max(PX_H, el.scrollHeight),
-    });
-
-    const canvas1 = await html2canvas(page1, renderOpts(page1));
-    doc.addImage(canvas1.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
-
-    doc.addPage();
-    const canvas2 = await html2canvas(page2, renderOpts(page2));
-    doc.addImage(canvas2.toDataURL('image/jpeg', 0.95), 'JPEG', 0, 0, 210, 297);
-
-    const filename = `Заява_${STATE.lastName || 'вступ'}.pdf`;
-    doc.save(filename);
+    const doc = await buildPdfDoc();
+    doc.save(pdfFilename());
     toast('✓ PDF завантажено');
   } catch (e) {
     console.error(e);
@@ -438,6 +446,87 @@ btnPdf.addEventListener('click', async () => {
   } finally {
     btnPdf.disabled = false;
     btnPdf.textContent = originalText;
+  }
+});
+
+/* ========= SEND EMAIL ========= */
+const WORKER_URL = 'https://membership-form-mail.narcissaless742.workers.dev/';
+const extraFiles = [];
+const fileListEl = $('#fileList');
+const sendFilesInput = $('#sendFiles');
+const btnSendEmail = $('#btn-send-email');
+const sendNote = $('#sendNote');
+
+function formatBytes(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+  return (n / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function renderFileList() {
+  fileListEl.innerHTML = '';
+  extraFiles.forEach((f, idx) => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <span class="file-name">${escapeHtml(f.name)}</span>
+      <span class="file-size">${formatBytes(f.size)}</span>
+      <button type="button" class="file-remove" data-idx="${idx}" aria-label="Видалити">✕</button>
+    `;
+    fileListEl.appendChild(li);
+  });
+  fileListEl.querySelectorAll('.file-remove').forEach(b => {
+    b.addEventListener('click', () => {
+      extraFiles.splice(+b.dataset.idx, 1);
+      renderFileList();
+    });
+  });
+}
+
+sendFilesInput.addEventListener('change', (e) => {
+  for (const f of e.target.files) extraFiles.push(f);
+  sendFilesInput.value = '';
+  renderFileList();
+});
+
+btnSendEmail.addEventListener('click', async () => {
+  if (!validateStep(1) || !validateStep(2) || !validateStep(3) || !validateStep(4)) {
+    toast('Заповніть усі обов\'язкові поля', { error: true });
+    return;
+  }
+  const originalText = btnSendEmail.textContent;
+  btnSendEmail.disabled = true;
+  btnSendEmail.textContent = 'Готуємо PDF…';
+
+  try {
+    const doc = await buildPdfDoc();
+    const pdfBlob = doc.output('blob');
+
+    btnSendEmail.textContent = 'Надсилаємо…';
+
+    const fd = new FormData();
+    const fio = [STATE.lastName, STATE.firstName, STATE.middleName].filter(Boolean).join(' ');
+    fd.append('fio', fio);
+    fd.append('email', STATE.email);
+    fd.append('phone', STATE.phone);
+    fd.append('note', sendNote.value.trim());
+    fd.append('pdf', pdfBlob, pdfFilename());
+    for (const f of extraFiles) fd.append('file', f, f.name);
+
+    const res = await fetch(WORKER_URL, { method: 'POST', body: fd });
+    const result = await res.json().catch(() => ({}));
+    if (!res.ok || !result.ok) {
+      throw new Error(result.error || `HTTP ${res.status}`);
+    }
+    toast('✓ Заяву надіслано на пошту');
+    sendNote.value = '';
+    extraFiles.length = 0;
+    renderFileList();
+  } catch (e) {
+    console.error(e);
+    toast('Не вдалось надіслати: ' + e.message, { error: true, ms: 4000 });
+  } finally {
+    btnSendEmail.disabled = false;
+    btnSendEmail.textContent = originalText;
   }
 });
 
