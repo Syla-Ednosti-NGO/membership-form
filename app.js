@@ -21,6 +21,7 @@ const STATE = {
   otherInfo: '',
   signatureData: '',
   signatureSource: '',
+  docType: '',
 };
 
 /* ========= TOAST ========= */
@@ -474,9 +475,6 @@ btnPdf.addEventListener('click', async () => {
 
 /* ========= SEND EMAIL ========= */
 const WORKER_URL = 'https://membership-form-mail.culaednocti.workers.dev/';
-const extraFiles = [];
-const fileListEl = $('#fileList');
-const sendFilesInput = $('#sendFiles');
 const btnSendEmail = $('#btn-send-email');
 const sendNote = $('#sendNote');
 
@@ -486,29 +484,73 @@ function formatBytes(n) {
   return (n / (1024 * 1024)).toFixed(1) + ' MB';
 }
 
-function renderFileList() {
-  fileListEl.innerHTML = '';
-  extraFiles.forEach((f, idx) => {
-    const li = document.createElement('li');
-    li.innerHTML = `
-      <span class="file-name">${escapeHtml(f.name)}</span>
-      <span class="file-size">${formatBytes(f.size)}</span>
-      <button type="button" class="file-remove" data-idx="${idx}" aria-label="Видалити">✕</button>
-    `;
-    fileListEl.appendChild(li);
-  });
-  fileListEl.querySelectorAll('.file-remove').forEach(b => {
-    b.addEventListener('click', () => {
-      extraFiles.splice(+b.dataset.idx, 1);
-      renderFileList();
+/* ===== Document slots (mandatory passport + IPN photos) ===== */
+const DOC_SETS = {
+  card: [
+    { id: 'passportFront', label: 'Фото лицьової сторони ID-картки', fileBase: 'Паспорт-картка_лицьова' },
+    { id: 'passportBack',  label: 'Фото зворотної сторони ID-картки', fileBase: 'Паспорт-картка_зворотна' },
+  ],
+  booklet: [
+    { id: 'passportP1', label: 'Фото 1-ї сторінки паспорта', fileBase: 'Паспорт-сторінка-1' },
+    { id: 'passportP2', label: 'Фото 2-ї сторінки паспорта', fileBase: 'Паспорт-сторінка-2' },
+    { id: 'ipnPhoto',   label: 'Фото ІПН (РНОКПП)',           fileBase: 'ІПН' },
+  ],
+};
+const DOC_TYPE_LABEL = { card: 'ID-картка (пластикова)', booklet: 'Паспорт-книжка' };
+const docFiles = {};
+const docSlotsContainer = $('#docSlotsContainer');
+const docSlotTpl = $('#docSlotTpl');
+
+function renderDocSlots() {
+  docSlotsContainer.innerHTML = '';
+  if (!STATE.docType) return;
+  for (const slot of DOC_SETS[STATE.docType]) {
+    const node = docSlotTpl.content.cloneNode(true);
+    const root = node.querySelector('.doc-slot');
+    root.dataset.docId = slot.id;
+    root.querySelector('.doc-slot-label').textContent = slot.label;
+    root.querySelector('.doc-slot-error').setAttribute('data-error-for', slot.id);
+    const fileInput = root.querySelector('input[type="file"]');
+    fileInput.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      docFiles[slot.id] = file;
+      applySlotPreview(root, file);
+      clearError(slot.id);
+      e.target.value = '';
     });
-  });
+    root.querySelector('.doc-slot-remove').addEventListener('click', () => {
+      delete docFiles[slot.id];
+      root.querySelector('.doc-slot-btn').classList.remove('hidden');
+      root.querySelector('.doc-slot-preview').classList.add('hidden');
+    });
+    docSlotsContainer.appendChild(node);
+    if (docFiles[slot.id]) {
+      applySlotPreview(docSlotsContainer.querySelector(`.doc-slot[data-doc-id="${slot.id}"]`), docFiles[slot.id]);
+    }
+  }
 }
 
-sendFilesInput.addEventListener('change', (e) => {
-  for (const f of e.target.files) extraFiles.push(f);
-  sendFilesInput.value = '';
-  renderFileList();
+function applySlotPreview(root, file) {
+  const reader = new FileReader();
+  reader.onload = () => { root.querySelector('.doc-slot-thumb').src = reader.result; };
+  reader.readAsDataURL(file);
+  root.querySelector('.doc-slot-filename').textContent = file.name;
+  root.querySelector('.doc-slot-size').textContent = formatBytes(file.size);
+  root.querySelector('.doc-slot-btn').classList.add('hidden');
+  root.querySelector('.doc-slot-preview').classList.remove('hidden');
+}
+
+$$('input[name="docType"]').forEach(r => {
+  r.addEventListener('change', e => {
+    STATE.docType = e.target.value;
+    const validIds = DOC_SETS[STATE.docType].map(s => s.id);
+    for (const id of Object.keys(docFiles)) {
+      if (!validIds.includes(id)) delete docFiles[id];
+    }
+    renderDocSlots();
+    clearError('docType');
+  });
 });
 
 btnSendEmail.addEventListener('click', async () => {
@@ -516,6 +558,19 @@ btnSendEmail.addEventListener('click', async () => {
     toast('Заповніть усі обов\'язкові поля', { error: true });
     return;
   }
+  if (!STATE.docType) {
+    setError('docType', 'Оберіть тип документа');
+    toast('Оберіть тип документа', { error: true });
+    return;
+  }
+  const requiredSlots = DOC_SETS[STATE.docType];
+  const missing = requiredSlots.filter(s => !docFiles[s.id]);
+  if (missing.length) {
+    missing.forEach(s => setError(s.id, 'Прикріпіть фото'));
+    toast('Прикріпіть усі обов\'язкові фото', { error: true });
+    return;
+  }
+
   const originalText = btnSendEmail.textContent;
   btnSendEmail.disabled = true;
   btnSendEmail.textContent = 'Готуємо PDF…';
@@ -531,9 +586,15 @@ btnSendEmail.addEventListener('click', async () => {
     fd.append('fio', fio);
     fd.append('email', STATE.email);
     fd.append('phone', STATE.phone);
-    fd.append('note', sendNote.value.trim());
+    const composedNote = [`Тип документа: ${DOC_TYPE_LABEL[STATE.docType]}`, sendNote.value.trim()]
+      .filter(Boolean).join('\n\n');
+    fd.append('note', composedNote);
     fd.append('pdf', pdfBlob, pdfFilename());
-    for (const f of extraFiles) fd.append('file', f, f.name);
+    for (const slot of requiredSlots) {
+      const f = docFiles[slot.id];
+      const ext = (f.name.match(/\.[a-zA-Z0-9]+$/) || ['.jpg'])[0];
+      fd.append('file', f, slot.fileBase + ext);
+    }
 
     const res = await fetch(WORKER_URL, { method: 'POST', body: fd });
     const result = await res.json().catch(() => ({}));
@@ -542,8 +603,10 @@ btnSendEmail.addEventListener('click', async () => {
     }
     toast('✓ Заяву надіслано на пошту');
     sendNote.value = '';
-    extraFiles.length = 0;
-    renderFileList();
+    for (const id of Object.keys(docFiles)) delete docFiles[id];
+    $$('input[name="docType"]').forEach(r => { r.checked = false; });
+    STATE.docType = '';
+    renderDocSlots();
   } catch (e) {
     console.error(e);
     toast('Не вдалось надіслати: ' + e.message, { error: true, ms: 4000 });
