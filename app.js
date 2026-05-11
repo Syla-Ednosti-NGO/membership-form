@@ -63,6 +63,13 @@ new Cleave('#phone', {
   numericOnly: true,
 });
 
+/* ========= BIRTH DATE MASK (дд.мм.рррр) ========= */
+new Cleave('#birthDate', {
+  date: true,
+  datePattern: ['d', 'm', 'Y'],
+  delimiter: '.',
+});
+
 /* ========= DEFAULT DATES ========= */
 (function setDefaultDates() {
   const today = new Date().toISOString().slice(0, 10);
@@ -130,7 +137,22 @@ function validateStep(step) {
     req('lastName');
     req('firstName');
     req('middleName');
-    req('birthDate', 'Вкажіть дату народження');
+    if (!STATE.birthDate) {
+      setError('birthDate', 'Вкажіть дату народження'); ok = false;
+    } else {
+      const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(STATE.birthDate);
+      let validDate = false;
+      if (m) {
+        const dd = +m[1], mm = +m[2], yyyy = +m[3];
+        const d = new Date(yyyy, mm - 1, dd);
+        validDate =
+          d.getFullYear() === yyyy && d.getMonth() === mm - 1 && d.getDate() === dd &&
+          yyyy >= 1900 && d <= new Date();
+      }
+      if (!validDate) {
+        setError('birthDate', 'Дата некоректна, формат дд.мм.рррр'); ok = false;
+      }
+    }
     if (STATE.ipn && !/^\d{10}$/.test(STATE.ipn)) {
       setError('ipn', 'Має бути рівно 10 цифр'); ok = false;
     } else if (!STATE.ipn) {
@@ -309,10 +331,11 @@ function collectSignature() {
 }
 
 /* ========= REVIEW ========= */
-function fmtDate(iso) {
-  if (!iso) return '';
-  const [y, m, d] = iso.split('-');
-  return `${d}.${m}.${y}`;
+function fmtDate(s) {
+  if (!s) return '';
+  if (/^\d{2}\.\d{2}\.\d{4}$/.test(s)) return s;
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : s;
 }
 
 function renderReview() {

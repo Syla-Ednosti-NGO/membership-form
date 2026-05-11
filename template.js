@@ -14,10 +14,11 @@ function esc(s) {
     .replace(/\n/g, '<br>');
 }
 
-function formatDate(iso) {
-  if (!iso) return '';
-  const [y, m, d] = iso.split('-');
-  return `${d}.${m}.${y}`;
+function formatDate(s) {
+  if (!s) return '';
+  if (/^\d{2}\.\d{2}\.\d{4}$/.test(s)) return s;
+  const iso = /^(\d{4})-(\d{2})-(\d{2})$/.exec(s);
+  return iso ? `${iso[3]}.${iso[2]}.${iso[1]}` : s;
 }
 
 function todayStr() {
