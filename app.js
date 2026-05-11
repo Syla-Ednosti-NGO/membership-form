@@ -450,7 +450,7 @@ btnPdf.addEventListener('click', async () => {
 });
 
 /* ========= SEND EMAIL ========= */
-const WORKER_URL = 'https://membership-form-mail.narcissaless742.workers.dev/';
+const WORKER_URL = 'https://membership-form-mail.culaednocti.workers.dev/';
 const extraFiles = [];
 const fileListEl = $('#fileList');
 const sendFilesInput = $('#sendFiles');

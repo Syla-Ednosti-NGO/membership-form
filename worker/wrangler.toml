@@ -3,8 +3,8 @@ main = "send-email.js"
 compatibility_date = "2024-10-01"
 
 [vars]
-TO_EMAIL = "narcissaless742@gmail.com"
+TO_EMAIL = "culaednocti@gmail.com"
 FROM_EMAIL = "onboarding@resend.dev"
-ALLOWED_ORIGINS = "https://narcissaless742.github.io,http://127.0.0.1:8765,http://localhost:8765"
+ALLOWED_ORIGINS = "https://syla-ednosti-ngo.github.io,http://127.0.0.1:8765,http://localhost:8765"
 
 # RESEND_API_KEY is a secret — set with `wrangler secret put RESEND_API_KEY`
